@@ -11,7 +11,7 @@ public class ConnectFourModel {
 	private Colors player2 = Colors.BLUE;
 	private Colors computer;
 	Colors curPlayer = player1;
-	private boolean enableComputer = true;
+	private boolean enableComputer = false;
 
 	private List<ConnectFourListener> listeners = new ArrayList<ConnectFourListener>();
 
@@ -26,6 +26,7 @@ public class ConnectFourModel {
 	void start() {
 		status = Status.ONGOING;
 		fireStatusChanged();
+		
 		if (enableComputer) {
 			Random rd = new Random();
 			if (rd.nextInt() % 2 == 0) {
@@ -59,7 +60,7 @@ public class ConnectFourModel {
 		fireUpdateBoardView();
 
 		checkStatusChange(row, col);
-
+		
 		if (status == Status.ONGOING) {
 			changeTurn();
 			if (enableComputer) {
@@ -92,6 +93,7 @@ public class ConnectFourModel {
 		}
 
 		board.dropPiece(nextMove[0], nextMove[1], curPlayer);
+		fireUpdateBoardView();
 
 		checkStatusChange(nextMove[0], nextMove[1]);
 
@@ -154,5 +156,4 @@ public class ConnectFourModel {
 			l.ChangeTurn(curPlayer);
 		}
 	}
-
 }

@@ -1,6 +1,10 @@
 package connectFour;
 
 public class ConnectFourGame {
-	private ConnectFourModel cfm = new ConnectFourModel(true);
-	
+	public static void main(String[] args) {
+		ConnectFourModel model = new ConnectFourModel();
+		ConnectFourView gameView = new ConnectFourView(model);
+		model.register(gameView);
+		model.start();
+	}
 }

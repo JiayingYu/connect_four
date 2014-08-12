@@ -34,6 +34,7 @@ class Board {
 		for (int i = 0; i < 6; i++) {
 			if (board[i][col] == Colors.EMPTY) {
 				row = i;
+				return row;
 			}
 		}
 		return row;

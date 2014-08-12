@@ -13,79 +13,65 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class ConnectFourView implements ConnectFourListener{
+	
 	private final ConnectFourModel model;
-	private JFrame frame;
+	
 	private static final int ROW = 6;
 	private static final int COL = 7;
 	
-	private JPanel jpMessage;
-	private JLabel jlMessage;
-	private JLabel jlTurn;
-	private JPanel jpBoard;
-	private JPanel jpControl;
-	private JButton jbtStart;
-	private JButton jbtReset;
-	private JCheckBox jcbAI;
-	private JRButton[][] boardBtns = new JRButton[ROW][COL];
+	private JFrame frame;
+	
+	private JPanel ctrPanel;
+	private JButton startBtn;
+	private JButton resetBtn;
+	private JCheckBox AIBox;
+	
+	private JPanel msgPanel;
+	private JLabel infoLabel;
+	private JLabel turnLabel;
+	
+	private JPanel boardPanel;
+	private RoundButton[][] boardBtns = new RoundButton[ROW][COL];
 			
-	private ConnectFourView(ConnectFourModel gameModel) {
+	public ConnectFourView(ConnectFourModel gameModel) {
 		model = gameModel;
 		
-		jbtStart = new JButton("Start");
-		jbtStart.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				model.start();
-			}
-		});
+		//control panel
+		ctrPanel = new JPanel(new GridLayout(3, 1));
+		startBtn = new JButton("Start");
+		startBtn.addActionListener(new StartListener());
+		resetBtn = new JButton("Reset");
+		resetBtn.addActionListener(new ResetListener());
+		AIBox = new JCheckBox("Play with Computer");
+		AIBox.addActionListener(new AIListener());
+		ctrPanel.add(startBtn);
+		ctrPanel.add(resetBtn);
+		ctrPanel.add(AIBox);
 		
-		jbtReset = new JButton("Reset");
-		jbtReset.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				model.reset();
-			}
-		});
+		//message panel
+		msgPanel = new JPanel(new GridLayout(1, 2));
+		infoLabel = new JLabel("Connect Four");
+		turnLabel = new JLabel(model.curPlayer.toString());
+		msgPanel.add(infoLabel);
+		msgPanel.add(turnLabel);
 		
-		jcbAI = new JCheckBox("Play with Computer");
-		jcbAI.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				model.enableComputer(jcbAI.isSelected() ? true: false);
-			}
-		});
-		
-		jpControl = new JPanel(new GridLayout(3, 1));
-		jpControl.add(jbtStart);
-		jpControl.add(jbtReset);
-		jpControl.add(jcbAI);
-		
-		jpMessage = new JPanel(new GridLayout(1, 2));
-		jlMessage = new JLabel("Connect Four");
-		jlTurn = new JLabel(model.curPlayer.toString());
-		jpMessage.add(jpMessage);
-		jpMessage.add(jlTurn);
-		
-		jpBoard = new JPanel(new GridLayout(ROW, COL));
-		for (int i = ROW - 1; i >= 0; i--) {
-			for (int j = 0; j < COL; j++) {
-				final JRButton piece = new JRButton(i, j);
-				piece.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						model.makeMove(piece.col);
-					}
-				});
-				boardBtns[i][j] = piece;
-				jpBoard.add(piece);
+		//boardPanel
+		boardPanel = new JPanel(new GridLayout(ROW, COL));
+		ButtonListener bl = new ButtonListener();
+		for (int r = ROW - 1; r >= 0; r--) {
+			for (int c = 0; c < COL; c++) {
+				final RoundButton newPiece = new RoundButton(r, c);
+				newPiece.addActionListener(bl);
+				boardBtns[r][c] = newPiece;
+				boardPanel.add(newPiece);
 			}
 		}
 		
 		frame = new JFrame("Connect Four Game");
 		frame.setLayout(new BorderLayout());
-		frame.add(jpMessage, BorderLayout.NORTH);
-		frame.add(jpBoard, BorderLayout.CENTER);
-		frame.add(jpControl, BorderLayout.EAST);
+		frame.add(msgPanel, BorderLayout.NORTH);
+		frame.add(boardPanel, BorderLayout.CENTER);
+		frame.add(ctrPanel, BorderLayout.EAST);
 		frame.setSize(700, 600);
 		frame.setLocale(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -94,25 +80,36 @@ public class ConnectFourView implements ConnectFourListener{
 	
 	@Override
 	public void updateBoardView(Colors[][] board) {
-		for (int i = 0; i < ROW; i++) {
-			for (int j = 0; j < COL; j ++) {
-				switch(board[i][j]) {
-				case BLUE: boardBtns[i][j].setBackground(Color.BLUE); break;
-				case RED: boardBtns[i][j].setBackground(Color.RED); break;
-				case EMPTY: boardBtns[i][j].setBackground(Color.WHITE); break;
+		for (int r = 0; r < ROW; r++) {
+			for (int c = 0; c < COL; c ++) {
+				switch(board[r][c]) {
+				case BLUE: 
+					boardBtns[r][c].setBackground(Color.BLUE); break;
+				case RED: 
+					boardBtns[r][c].setBackground(Color.RED); break;
+				case EMPTY: 
+					boardBtns[r][c].setBackground(Color.WHITE); break;
 				}
+				boardBtns[r][c].repaint();
 			}
 		}
 	}
+	
+
 
 	@Override
 	public void statusChanged(Status status) {
 		switch (status) {
-		case READY: jlMessage.setText("Ready to go. Press start to play."); break;
-		case ONGOING: jlMessage.setText("Game is on. Click on column to drop your piece"); break;
-		case RED_WIN: jlMessage.setText("Red wins"); break;
-		case BLUE_WIN: jlMessage.setText("Blue wins"); break;
-		case DRAW: jlMessage.setText("It's a draw"); break;
+		case READY: 
+			infoLabel.setText("Ready to go. Press start to play."); break;
+		case ONGOING: 
+			infoLabel.setText("Game is on. Click on column to drop your piece"); break;
+		case RED_WIN: 
+			infoLabel.setText("Red wins"); break;
+		case BLUE_WIN: 
+			infoLabel.setText("Blue wins"); break;
+		case DRAW: 
+			infoLabel.setText("It's a draw"); break;
 		default: break;
 		}
 			
@@ -120,7 +117,37 @@ public class ConnectFourView implements ConnectFourListener{
 
 	@Override
 	public void ChangeTurn(Colors curPlayer) {
-		jlTurn.setText(curPlayer.toString());
+		turnLabel.setText(curPlayer.toString());
 	}
-
+	
+	class ButtonListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int col = ((RoundButton) e.getSource()).col;
+			model.makeMove(col);
+		}
+	}
+	
+	class StartListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			model.start();
+		}
+	}
+	
+	class ResetListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			model.reset();
+		}
+	}
+	
+	class AIListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			model.enableComputer(AIBox.isSelected() ? true: false);
+		}
+	}
 }
+
+
