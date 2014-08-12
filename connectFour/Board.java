@@ -1,29 +1,29 @@
 package connectFour;
 
 class Board {
-	final int row = 6;
-	final int col = 7;
-	Color[][] board = new Color[row][col];
+	static final int ROW = 6;
+	static final int COL = 7;
+	Colors[][] board = new Colors[ROW][COL];
 	private int pieceNum = 0;
 
 	Board() {
-		for (int i = 0; i < row; i++) {
-			for (int j = 0; j < col; j++) {
-				board[i][j] = Color.EMPTY;
+		for (int i = 0; i < ROW; i++) {
+			for (int j = 0; j < COL; j++) {
+				board[i][j] = Colors.EMPTY;
 			}
 		}
 	}
 
 	boolean validateStep(int col) {
-		if (col >= 0 && col < this.col && board[5][col] == Color.EMPTY)
+		if (col >= 0 && col < COL && board[5][col] == Colors.EMPTY)
 			return true;
 		else
 			return false;
 			
 	}
 
-	void dropPiece(int row, int col, Color color) {
-		if (board[row][col] == Color.EMPTY)
+	void dropPiece(int row, int col, Colors color) {
+		if (board[row][col] == Colors.EMPTY)
 			board[row][col] = color;
 		else
 			throw new IllegalArgumentException("Invalid step! The column is full");
@@ -32,7 +32,7 @@ class Board {
 	int availableSpace(int col) {
 		int row = -1;
 		for (int i = 0; i < 6; i++) {
-			if (board[i][col] == Color.EMPTY) {
+			if (board[i][col] == Colors.EMPTY) {
 				row = i;
 			}
 		}
@@ -43,13 +43,13 @@ class Board {
 		return pieceNum == 42;
 	}
 
-	boolean checkConnectFour(Color color, int row, int col) {
+	boolean checkConnectFour(Colors color, int row, int col) {
 		return (verConnection(color, row, col) &&
 		horConnection(color, row, col) &&
 		diagConnection(color, row, col));
 	}
 
-	private boolean verConnection(Color color, int row, int col) {
+	private boolean verConnection(Colors color, int row, int col) {
 		int connection = 1;
 		for (int i = row - 1; i >= 0; i--) {
 			if (board[i][col] == color) {
@@ -64,7 +64,7 @@ class Board {
 		return false;
 	}
 
-	private boolean horConnection(Color color, int row, int col) {
+	private boolean horConnection(Colors color, int row, int col) {
 		int connection = 1;
 		for (int j = col - 1; j >= 0; j--) {
 			if (board[row][j] == color) {
@@ -90,7 +90,7 @@ class Board {
 		return false;
 	}
 
-	private boolean diagConnection(Color color, int row, int col) {
+	private boolean diagConnection(Colors color, int row, int col) {
 		int connection = 1;
 		outerloop: for (int i = row - 1; i >= 0; i--) {
 			for (int j = col - 1; j >= 0; j--) {

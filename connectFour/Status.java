@@ -1,5 +1,5 @@
 package connectFour;
 
 enum Status {
-  DRAW, RED_WIN, BLUE_WIN, ONGOING;
+  DRAW, RED_WIN, BLUE_WIN, ONGOING, READY;
 }

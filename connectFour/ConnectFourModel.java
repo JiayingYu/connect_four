@@ -6,46 +6,49 @@ import java.util.Random;
 
 public class ConnectFourModel {
 	private Board board;
-	private Status status = Status.ONGOING;
-	private Color player1 = Color.RED;
-	private Color player2 = Color.BLUE;
-	private Color curPlayer;
+	private Status status = Status.READY;
+	private Colors player1 = Colors.RED;
+	private Colors player2 = Colors.BLUE;
+	private Colors computer;
+	Colors curPlayer = player1;
 	private boolean enableComputer = true;
+
 	private List<ConnectFourListener> listeners = new ArrayList<ConnectFourListener>();
 
-	public ConnectFourModel(boolean enableComputer) {
+	public ConnectFourModel() {
 		board = new Board();
-		this.enableComputer = enableComputer;
-		randomStartPlayer();
 	}
-	
-	public void register(ConnectFourListener listener) {
-		listeners.add(listener);
-	}
-	
-	public void unregister(ConnectFourListener listener) {
-		listeners.remove(listener);	}
 
-	private void randomStartPlayer() {
-		Random rd = new Random();
-		if (rd.nextInt(2) == 0) {
-			curPlayer = player1;
-		} else {
-			curPlayer = player2;
+	void enableComputer(boolean enableComputer) {
+		this.enableComputer = enableComputer;
+	}
+
+	void start() {
+		status = Status.ONGOING;
+		fireStatusChanged();
+		if (enableComputer) {
+			Random rd = new Random();
+			if (rd.nextInt() % 2 == 0) {
+				computer = curPlayer;
+				computerMove();
+			}
 		}
 	}
-	
-	private void start() {
+
+	void reset() {
 		board = new Board();
-		status = Status.ONGOING;
+		fireUpdateBoardView();
+		status = Status.READY;
+		fireStatusChanged();
 	}
 
 	private void changeTurn() {
-		curPlayer = curPlayer == Color.RED ? Color.BLUE : Color.RED;
+		curPlayer = curPlayer == Colors.RED ? Colors.BLUE : Colors.RED;
+		fireChangeTurn();
 
 	}
 
-	private void makeMove(int col) {
+	void makeMove(int col) {
 		checkStatus();
 		if (!board.validateStep(col)) {
 			throw new IllegalArgumentException("Step not valid");
@@ -53,21 +56,27 @@ public class ConnectFourModel {
 
 		int row = board.availableSpace(col);
 		board.dropPiece(row, col, curPlayer);
+		fireUpdateBoardView();
 
+		checkStatusChange(row, col);
+
+		if (status == Status.ONGOING) {
+			changeTurn();
+			if (enableComputer) {
+				computerMove();
+			}
+		}
+	}
+
+	private void checkStatusChange(int row, int col) {
 		if (board.checkDraw()) {
 			status = Status.DRAW;
-			return;
+			fireStatusChanged();
 		}
 
 		if (board.checkConnectFour(curPlayer, row, col)) {
-			status = (curPlayer == Color.RED ? Status.RED_WIN : Status.BLUE_WIN);
-			return;
-		}
-
-		changeTurn();
-
-		if (enableComputer) {
-			computerMove();
+			status = curPlayer == Colors.RED ? Status.RED_WIN : Status.BLUE_WIN;
+			fireStatusChanged();
 		}
 	}
 
@@ -83,17 +92,11 @@ public class ConnectFourModel {
 		}
 
 		board.dropPiece(nextMove[0], nextMove[1], curPlayer);
-		
-		if (board.checkDraw()) {
-			status = Status.DRAW;
-			return;
-		}
 
-		if (board.checkConnectFour(curPlayer, nextMove[0], nextMove[1])) {
-			status = (curPlayer == Color.RED ? Status.RED_WIN : Status.BLUE_WIN);
-			return;
-		}
-		changeTurn();
+		checkStatusChange(nextMove[0], nextMove[1]);
+
+		if (status == Status.ONGOING)
+			changeTurn();
 	}
 
 	private int[] computeRandomMove() {
@@ -114,11 +117,11 @@ public class ConnectFourModel {
 				int row = board.availableSpace(col);
 				if (board.checkConnectFour(player1, row, col)
 						|| board.checkConnectFour(player2, row, col)) {
-					return new int[] {row, col};
+					return new int[] { row, col };
 				}
 			}
 		}
-		return new int[] {-1, -1};
+		return new int[] { -1, -1 };
 	}
 
 	private void checkStatus() {
@@ -126,5 +129,30 @@ public class ConnectFourModel {
 			throw new IllegalArgumentException("Game is over. No more steps");
 	}
 
+	public void register(ConnectFourListener listener) {
+		listeners.add(listener);
+	}
+
+	public void unregister(ConnectFourListener listener) {
+		listeners.remove(listener);
+	}
+
+	private void fireStatusChanged() {
+		for (ConnectFourListener l : listeners) {
+			l.statusChanged(status);
+		}
+	}
+
+	private void fireUpdateBoardView() {
+		for (ConnectFourListener l : listeners) {
+			l.updateBoardView(board.board);
+		}
+	}
+
+	private void fireChangeTurn() {
+		for (ConnectFourListener l : listeners) {
+			l.ChangeTurn(curPlayer);
+		}
+	}
 
 }

@@ -1,5 +1,5 @@
 package connectFour;
 
-enum Color {
+enum Colors {
   RED, BLUE, EMPTY;
 }

@@ -1,7 +1,7 @@
 package connectFour;
 
 public interface ConnectFourListener {
-	void stateChanged();
-	void gameStarted();
-	void pieceDroped();
+	void updateBoardView(Colors[][] board);
+	void statusChanged(Status status);
+	void ChangeTurn(Colors curPlayer);
 }
