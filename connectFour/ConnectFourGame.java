@@ -5,6 +5,5 @@ public class ConnectFourGame {
 		ConnectFourModel model = new ConnectFourModel();
 		ConnectFourView gameView = new ConnectFourView(model);
 		model.register(gameView);
-		model.start();
 	}
 }

@@ -27,6 +27,7 @@ class Board {
 			board[row][col] = color;
 		else
 			throw new IllegalArgumentException("Invalid step! The column is full");
+		++pieceNum;
 	}
 	
 	int availableSpace(int col) {
