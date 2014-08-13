@@ -45,8 +45,8 @@ class Board {
 	}
 
 	boolean checkConnectFour(Colors color, int row, int col) {
-		return (verConnection(color, row, col) &&
-		horConnection(color, row, col) &&
+		return (verConnection(color, row, col) ||
+		horConnection(color, row, col) ||
 		diagConnection(color, row, col));
 	}
 
@@ -92,32 +92,39 @@ class Board {
 	}
 
 	private boolean diagConnection(Colors color, int row, int col) {
+//		int connection = 1;
+//		outerloop: 
+//		for (int r = row - 1; r >= 0; r--) {
+//			if (col <= 0) break;
+//			for (int c = col - 1; c >= 0; c--) {
+//				if (board[r][c] == color) {
+//					++connection;
+//					if (connection == 4) {
+//						return true;
+//					}
+//				} else {
+//					break outerloop;
+//				}
+//			}
+//		}
+//
+//		outerloop: 
+//		for (int r = row + 1; r < 6; r++) {
+//			for (int c = col + 1; c < 7; c++) {
+//				if (board[r][c] == color) {
+//					++connection;
+//					if (connection == 4) {
+//						return true;
+//					}
+//				} else {
+//					break outerloop;
+//				}
+//			}
+//		}
+//		return false;
 		int connection = 1;
-		outerloop: for (int i = row - 1; i >= 0; i--) {
-			for (int j = col - 1; j >= 0; j--) {
-				if (board[i][j] == color) {
-					++connection;
-					if (connection == 4) {
-						return true;
-					}
-				} else {
-					break outerloop;
-				}
-			}
+		for (int i = 1; i <= row && i <= col; i++) {
+			
 		}
-
-		outerloop: for (int i = row + 1; i < 6; i++) {
-			for (int j = col + 1; j < 7; j++) {
-				if (board[i][j] == color) {
-					++connection;
-					if (connection == 4) {
-						return true;
-					}
-				} else {
-					break outerloop;
-				}
-			}
-		}
-		return false;
 	}
 }
