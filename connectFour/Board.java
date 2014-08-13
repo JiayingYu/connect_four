@@ -92,39 +92,32 @@ class Board {
 	}
 
 	private boolean diagConnection(Colors color, int row, int col) {
-//		int connection = 1;
-//		outerloop: 
-//		for (int r = row - 1; r >= 0; r--) {
-//			if (col <= 0) break;
-//			for (int c = col - 1; c >= 0; c--) {
-//				if (board[r][c] == color) {
-//					++connection;
-//					if (connection == 4) {
-//						return true;
-//					}
-//				} else {
-//					break outerloop;
-//				}
-//			}
-//		}
-//
-//		outerloop: 
-//		for (int r = row + 1; r < 6; r++) {
-//			for (int c = col + 1; c < 7; c++) {
-//				if (board[r][c] == color) {
-//					++connection;
-//					if (connection == 4) {
-//						return true;
-//					}
-//				} else {
-//					break outerloop;
-//				}
-//			}
-//		}
-//		return false;
 		int connection = 1;
 		for (int i = 1; i <= row && i <= col; i++) {
-			
+			if (board[row - i][col - i] == color) {
+				if (++connection == 4) return true;
+			} else { break; }
 		}
-	}
+		
+		for (int i = 1; i + row < 6 && i + col < 7; i++) {
+			if (board[row + i][col + i] == color) {
+				if (++connection == 4) return true;
+			} else { break; }
+		}
+		
+		connection = 1;
+		for (int i = 1; i <= col && row + i < 6; i++) {
+			if (board[row + i][col - i] == color) {
+				if (++connection == 4) return true;
+			} else { break; }
+		}
+		
+		for (int i = 1; i <= row && col + i < 7; i++) {
+			if (board[row - i][col + i] == color) {
+				if (++connection == 4) return true;
+			} else { break; }
+		}
+		
+		return false;
+	}		
 }
