@@ -22,8 +22,6 @@ public class ConnectFourView implements ConnectFourListener{
 	private static final int COL = 7;
 	
 	private JFrame frame;
-	private int fwidth = 750;
-	private int fheight = 600;
 	
 	private JPanel ctrPanel;
 	private JButton startBtn;
@@ -43,7 +41,6 @@ public class ConnectFourView implements ConnectFourListener{
 		//control panel
 		ctrPanel = new JPanel(new GridLayout(3, 1));
 		startBtn = new JButton("Start");
-		startBtn.setSize(40, 20);
 		startBtn.addActionListener(new StartListener());
 		resetBtn = new JButton("Reset");
 		resetBtn.addActionListener(new ResetListener());
@@ -55,7 +52,6 @@ public class ConnectFourView implements ConnectFourListener{
 		
 		//message panel
 		msgPanel = new JPanel(new GridLayout(1, 2));
-		msgPanel.setSize(300, 200);
 		infoLabel = new JLabel("Ready to go. Press Start to play.");
 		turnLabel = new JLabel("Turn: " + model.curPlayer.toString());
 		msgPanel.add(infoLabel);
@@ -63,7 +59,6 @@ public class ConnectFourView implements ConnectFourListener{
 		
 		//boardPanel
 		boardPanel = new JPanel(new GridLayout(ROW, COL));
-		boardPanel.setSize(500, 500);
 		ButtonListener bl = new ButtonListener();
 		for (int r = ROW - 1; r >= 0; r--) {
 			for (int c = 0; c < COL; c++) {
@@ -104,8 +99,6 @@ public class ConnectFourView implements ConnectFourListener{
 			}
 		}
 	}
-	
-
 
 	@Override
 	public void statusChanged(Status status) {
@@ -116,15 +109,12 @@ public class ConnectFourView implements ConnectFourListener{
 			infoLabel.setText("Game is on. Choose a column to drop your piece"); break;
 		case RED_WIN: 
 			infoLabel.setText("Red wins"); 
-			GameOver("Red wins!");
 			break;
 		case BLUE_WIN: 
 			infoLabel.setText("Blue wins");
-			GameOver("Blue Wins");
 			break;
 		case DRAW: 
 			infoLabel.setText("It's a draw");
-			GameOver("It's a draw!");
 			break;
 		default: break;
 		}		
@@ -134,9 +124,10 @@ public class ConnectFourView implements ConnectFourListener{
 	public void ChangeTurn(Colors curPlayer) {
 		turnLabel.setText("Turn: " + curPlayer.toString());
 	}
-	
-	public void GameOver(String msg) {
-		JOptionPane.showMessageDialog(null, msg);
+		
+	@Override
+	public void gameOver(Status status) {
+		JOptionPane.showMessageDialog(null, status.toString());
 		setBoardEnabled(false);
 		startBtn.setEnabled(false);
 	}

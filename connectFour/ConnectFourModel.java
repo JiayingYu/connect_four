@@ -73,13 +73,13 @@ public class ConnectFourModel {
 		if (board.checkDraw()) {
 			status = Status.DRAW;
 			fireStatusChanged();
-//			fireGameOver(row, col, curPlayer);
+			fireGameOver();
 		}
 
 		if (board.checkConnectFour(curPlayer, row, col)) {
 			status = curPlayer == Colors.RED ? Status.RED_WIN : Status.BLUE_WIN;
 			fireStatusChanged();
-//			fireGameOver(row, col, curPlayer);
+			fireGameOver();
 		}
 	}
 
@@ -159,9 +159,9 @@ public class ConnectFourModel {
 		}
 	}
 	
-//	private void fireGameOver(int row, int col, Colors color) {
-//		for (ConnectFourListener l : listeners) {
-//			l.gameOver(row, col, color, status);
-//		}
-//	}
+	private void fireGameOver() {
+		for (ConnectFourListener l : listeners) {
+			l.gameOver(status);
+		}
+	}
 }
